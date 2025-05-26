@@ -1,5 +1,5 @@
 import k from "../kaplayCtx";
-import { makeSonic } from "../entities/sonic"
+import { makeSonic } from "../entities/sonic";
 
 export default function mainMenu() {
   if (!k.getData("best-score")) k.setData("best-score", 0);
@@ -19,7 +19,7 @@ export default function mainMenu() {
   const platforms = [
     k.add([k.sprite("platforms"), k.pos(0, 450), k.scale(4)]),
     k.add([k.sprite("platforms"), k.pos(384, 450), k.scale(4)]),
-  ];
+  ]; 
 
   k.add([
     k.text("SONIC RING RUN", { font: "mania", size: 96 }),
@@ -35,7 +35,10 @@ export default function mainMenu() {
 
 
   const gameSpeed = 1000;
+
   makeSonic(k.vec2(200, 745));
+  
+
   k.onUpdate(() => {
     if (bgPieces[1].pos.x < 0) {
       bgPieces[0].moveTo(bgPieces[1].pos.x + bgPieceWidth * 2, 0);
