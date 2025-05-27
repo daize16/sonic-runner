@@ -1,5 +1,6 @@
 import k from "../kaplayCtx";
 import { makeSonic } from "../entities/sonic";
+import { makeMotobug} from "../entities/motobus";
 
 export default function game() {
     k.setGravity(3100);
@@ -23,11 +24,49 @@ export default function game() {
     const sonic = makeSonic(k.vec2(200, 745));
     sonic.setControls();
     sonic.setEvents();
+    sonic.onCollide("enemy", (enemy) => {
+        if (!sonic.isGrounded()) {
+            k.play("destroy", { volume: 0.5 });
+            k.play("hyper-ring", { volume: 0.5 });
+            k.destroy(enemy);
+            sonic.play("jump");
+            sonic.jump();
+            return;
+        };
+        k.play("hurt", { volume: 0.5 });
+        k.go("gameover");
+    });
+
 
     let gameSpeed = 3000;
     k.loop(1, () => {
         gameSpeed += 500;
     });
+
+    const spawnMotobug = () => {
+        const motobug = makeMotobug(k.vec2(1950, 773));
+        motobug.onUpdate(() => {
+            if (gameSpeed < 3000) {
+                motobug.move(-(gameSpeed + 300), 0)
+                return;
+            }
+            motobug.move(-gameSpeed, 0);
+        });
+
+        motobug.onExitScreen(() => {
+            if (motobug.pos.x < 0) k.destroy(motobug);
+        });
+
+        const waitTime = k.rand(0.5, 2.5);
+        k.wait(waitTime, spawnMotobug)
+
+    };
+
+    spawnMotobug();
+
+    
+
+    
 
     k.add([
         k.rect(1928, 300),
@@ -52,6 +91,9 @@ export default function game() {
             platforms[0].moveTo(platforms[1].pos.x + platforms[1].width * 4, 450);
             platforms.push(platforms.shift());
         };
+
+        platforms[0].move(-100, 0);
+        platforms[1].moveTo((platforms[0].pos.x + platformWidth * 2), 0);
 
     });
 }
